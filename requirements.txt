@@ -1,0 +1,6 @@
+Flask==3.0.3
+Flask-Limiter==3.6.0
+numpy==1.26.4
+opencv-python==4.9.0.80
+torch==2.2.2
+Pillow==10.3.0

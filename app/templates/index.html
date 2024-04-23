@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Karr Dynamics - Object Detection Demo</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <!-- Left column for heading, text, upload form, and table -->
+            <div class="sidebar col-md-4 left-column">
+                <img src="{{ url_for('static', filename='images/KarrDynamics-logo.png') }}" alt="Your Logo" class="logo mb-4">
+                <div>
+                    <span class="badge">Computer Vision Development</span>
+                </div>
+                <h1 class="custom-heading">Object Detection Demo</h1>
+                <h4 class="infoblock">This demo of our <b>Object Detection Tool</b>, powered by <a href="https://github.com/ultralytics/ultralytics">Ultralytics</a>, offers seamless object identification from uploaded images.</h4>
+
+                <form action="/" method="post" enctype="multipart/form-data" class="mt-4">
+                    <div class="input-group">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="customFile" name="file" accept="image/*" onchange="updateFileName(this)">
+                            <label class="custom-file-label" for="customFile" id="fileName">Choose file</label>
+                        </div>
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-primary">Upload</button>
+                        </div>
+                    </div>
+                </form>
+                <div>
+                    <h4 class="custom-subheading" style="padding-top: 20px;">Detected Objects:</h4>
+                </div>
+                <div class="mt-4 scrollable-table">
+                    <table id="detectionsTable" class="table">
+                        <thead>
+                            <tr>
+                                <th class="table-body">Object</th>
+                                <th class="table-body">Confidence</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-body">
+                            {% for object, confidence in objects_detected %}
+                                <tr data-x1="{{ object.x1 }}" data-y1="{{ object.y1 }}" data-x2="{{ object.x2 }}" data-y2="{{ object.y2 }}">
+                                    <td>{{ object }}</td>
+                                    <td>{{ confidence|round(2) }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Right column for image -->
+            <div class="col-md-8">
+                {% if image %}
+                    <img id="output_image" src="data:image/jpeg;base64,{{ image }}" class="img-fluid rounded" alt="Object Detection Result">
+                {% else %}
+                    <p class="text-center">No image uploaded.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        // Update file name in input field
+        function updateFileName(input) {
+            document.getElementById('fileName').innerText = input.files[0].name;
+        }
+
+        // Highlight bounding box on image when table row is clicked
+        $(document).ready(function() {
+            $('#detectionsTable tbody tr').click(function() {
+                let x1 = $(this).data('x1');
+                let y1 = $(this).data('y1');
+                let x2 = $(this).data('x2');
+                let y2 = $(this).data('y2');
+
+                // Create a canvas to draw the highlighted bounding box
+                let canvas = document.createElement('canvas');
+                canvas.width = $('#output_image').width();
+                canvas.height = $('#output_image').height();
+
+                let ctx = canvas.getContext('2d');
+                ctx.drawImage(document.getElementById('output_image'), 0, 0);
+
+                ctx.strokeStyle = 'red';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
+
+                // Replace the image with the canvas
+                $('#output_image').replaceWith(canvas);
+            });
+        });
+    </script>
+</body>
+</html>
