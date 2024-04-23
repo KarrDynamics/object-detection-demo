@@ -132,3 +132,26 @@ dmypy.json
 
 # cython
 cython_debug/
+.vercel
+
+# Virtual Environment
+venv/
+
+# Compiled Python files
+*.pyc
+__pycache__/
+
+# Environment variables
+.env
+
+# IDE files (if you're using an IDE)
+.vscode/
+.idea/
+*.iml
+
+# Render settings
+render.yaml
+
+# Other generated files
+*.log
+*.swp
