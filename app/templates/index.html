@@ -26,31 +26,43 @@
                 <form action="/" method="post" enctype="multipart/form-data" class="mt-4">
                     <div class="input-group">
                         <div class="custom-file">
-                            <input type="file" class="custom-file-input" id="customFile" name="file" accept="image/*" onchange="updateFileName(this)">
+                            <input type="file" class="custom-file-input" id="customFile" name="file" accept="image/*,video/*" onchange="updateFileName(this)">
                             <label class="custom-file-label" for="customFile" id="fileName">Choose file</label>
                         </div>
                         <div class="input-group-append">
                             <button type="submit" class="btn btn-primary">Upload</button>
                         </div>
                     </div>
+                    <div class="mt-2">
+                        <label class="radiobtn">
+                            <input type="radio" name="file_type" value="image" checked> Image
+                        </label>
+                        <label class="radiobtn">
+                            <input type="radio" name="file_type" value="video"> Video
+                        </label>
+                    </div>
                 </form>
+                
+                <!-- Add this video element to display the processed video -->
                 <div>
                     <h4 class="custom-subheading" style="padding-top: 20px;">Detected Objects:</h4>
                 </div>
                 <div class="mt-4 scrollable-table">
-                    <table id="detectionsTable" class="table">
+                    <table class="table">
                         <thead>
                             <tr>
                                 <th class="table-body">Object</th>
                                 <th class="table-body">Confidence</th>
+                                <th class="table-body">Bounding Box</th>
                             </tr>
                         </thead>
-                        <tbody class="table-body">
-                            {% for object, confidence in objects_detected %}
-                                <tr data-x1="{{ object.x1 }}" data-y1="{{ object.y1 }}" data-x2="{{ object.x2 }}" data-y2="{{ object.y2 }}">
-                                    <td>{{ object }}</td>
-                                    <td>{{ confidence|round(2) }}</td>
-                                </tr>
+                        <tbody>
+                            {% for detection in objects_detected %}
+                            <tr>
+                                <td class="table-body">{{ detection.label }}</td>
+                                <td class="table-body">{{ detection.confidence }}</td>
+                                <td class="table-body">{{ detection.x1 }}, {{ detection.y1 }}, {{ detection.x2 }}, {{ detection.y2 }}</td>
+                            </tr>
                             {% endfor %}
                         </tbody>
                     </table>
@@ -60,11 +72,20 @@
             <!-- Right column for image -->
             <div class="col-md-8">
                 {% if image %}
-                    <img id="output_image" src="data:image/jpeg;base64,{{ image }}" class="img-fluid rounded" alt="Object Detection Result">
+                    <img id="output_image" src="data:image/jpeg;base64,{{ image }}" class="img-fluid rounded" alt="Object Detection Result" style="max-width: 100%; height: auto;">
                 {% else %}
                     <p class="text-center">No image uploaded.</p>
                 {% endif %}
             </div>
+            {% if video_url %}
+            <div class="mt-4">
+                <h4 class="custom-subheading">Processed Video:</h4>
+                <video controls class="img-fluid rounded">
+                    <source src="{{ video_url }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            {% endif %}
         </div>
     </div>
 
