@@ -155,3 +155,7 @@ render.yaml
 # Other generated files
 *.log
 *.swp
+
+# folders 
+uploads/
+static/
